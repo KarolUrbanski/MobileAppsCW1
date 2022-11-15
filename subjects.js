@@ -1,0 +1,32 @@
+let allSubjects = {
+    math: {
+      id: 1001,
+      imgALT: "Math img",
+      imgSRC: "math.png",
+      name: "Math",
+      location: "London",
+      price: 100,
+      spaces: 10,
+      maxspaces: 10,
+    },
+    music: {
+      id: 1002,
+      imgALT: "Math img",
+      imgSRC: "math.png",
+      name: "Music",
+      location: "London",
+      price: 150,
+      spaces: 8,
+      maxspaces: 8,
+    },
+    english: {
+      id: 1003,
+      imgALT: "Math img",
+      imgSRC: "math.png",
+      name: "English",
+      location: "London",
+      price: 150,
+      spaces: 8,
+      maxspaces: 8,
+    },
+  };

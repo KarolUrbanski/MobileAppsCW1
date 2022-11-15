@@ -11,74 +11,61 @@
 
   <body>
     <div id="app">
-      <h1> After School Club</h1>
-        <div v-for="item in subjects" class="cont">
-          
-          <img id="img" v-bind:src="item.imgSRC" v-bind:alt="item.imgALT"/>
-          <div class="right">
-            <h3>{{item.subject}}</h3>
-            <p>{{item.location}}</p>
-            <p>Price: {{item.price}}</p>
-            <p>Spaces: {{item.spaces}}</p>
-            <input
-              class="basketbt"
-              type="button"
-              id="addToBasket"
-              value="Add to Basket"
-              v-on:click="toBasket(item)"
-            />
-          </div>
+      <h1>After School Club</h1>
+      <div v-for="item in subjects" class="cont">
+        <img id="img" v-bind:src="item.imgSRC" v-bind:alt="item.imgALT" />
+        <div class="right">
+          <h3>{{item.name}}</h3>
+          <p>{{item.location}}</p>
+          <p>Price: {{item.price}}</p>
+          <p v-if="item.spaces <= 5">Only {{item.spaces}} spaces!</p>
+          <p v-else=>Spaces: {{item.spaces}}</p>
+          <input
+            class="basketbt"
+            type="button"
+            id="addToBasket"
+            value="Add to Basket"
+            v-on:click="toBasket(item)"
+          />
         </div>
-     
-    </div>
+      </div>
 
+      <p>{{order.count}}</p>
+      <p>{{order.subjecs}}</p>
+    </div>
+    <script src="subjects.js"></script>
     <script>
       let app = new Vue({
         // the root Vue instance
         el: "#app", // this links to the <div> with the ID #app
         data: {
-          subjects: {
-             math: {
-              imgALT: "Math img",
-              imgSRC: "math.png",
-              subject: "Math",
-              location: "London",
-              price: 100,
-              spaces: 10,
-            },
-             music: {
-              imgALT: "Math img",
-              imgSRC: "math.png",
-              subject: "Music",
-              location: "London",
-              price: 150,
-              spaces: 8,
-            },
-             english:{
-              imgALT: "Math img",
-              imgSRC: "math.png",
-              subject: "English",
-              location: "London",
-              price: 150,
-              spaces: 8,
-            },
+          subjects: allSubjects,
+     
+          order: {
+            count: 0,
+            subjecs: [],
           },
         }, // this is the 'data' option, its value is a JSON object
         methods: {
-          onload: function () {
-           
-          },
           toBasket: function (subjec) {
             //check if there are free spaces left
             if (subjec.spaces > 0) {
               subjec.spaces -= 1;
+              this.order.subjecs.push(subjec.id) ;
+              this.order.count += 1;
             } else {
               subjec.spaces = "No spaces";
             }
           },
-        },
-        created: function () {
-          this.onload();
+          subjecsCount(id) {
+         let count = 0;
+           for(let i = 0; i < this.order.subjecs.length; i++) {
+             if (this.order.subjecs[i] === id) {
+               count++;
+              } 
+           }
+          return count;
+         }
         },
       });
     </script>
