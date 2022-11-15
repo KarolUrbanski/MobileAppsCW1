@@ -1,25 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head> 
+  <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CW1 - group work </title>
+    <title>CW1 - group work</title>
     <link rel="stylesheet" href="style.css" />
     <script src="https://unpkg.com/vue@2.7.8/dist/vue.js"></script>
-  </head >
+  </head>
 
   <body>
     <div id="app">
-      <h1>After School Club</h1>
-      <img id="img" v-bind:src="math.imgSRC" v-bind:alt="math.imgALT" />
-      <div class="right">
-        <h3>{{math.subject}}</h3>
-        <p>{{math.location}}</p>
-        <p>Price: {{math.price}}</p>
-        <p>Spaces: {{math.spaces}}</p>
-        <input class="basketbt" type="button" id="addToBasket" value="Add to Basket" v-on:click="toBasket" />
-      </div>
+      <h1> After School Club</h1>
+        <div v-for="item in subjects" class="cont">
+          
+          <img id="img" v-bind:src="item.imgSRC" v-bind:alt="item.imgALT"/>
+          <div class="right">
+            <h3>{{item.subject}}</h3>
+            <p>{{item.location}}</p>
+            <p>Price: {{item.price}}</p>
+            <p>Spaces: {{item.spaces}}</p>
+            <input
+              class="basketbt"
+              type="button"
+              id="addToBasket"
+              value="Add to Basket"
+              v-on:click="toBasket(item)"
+            />
+          </div>
+        </div>
+     
     </div>
 
     <script>
@@ -27,24 +37,48 @@
         // the root Vue instance
         el: "#app", // this links to the <div> with the ID #app
         data: {
-          math: {
-            imgALT: "Math img",
-            imgSRC: "math.png",
-            subject: "Math",
-            location: "London",
-            price: 100,
-            spaces: 10,
+          subjects: {
+             math: {
+              imgALT: "Math img",
+              imgSRC: "math.png",
+              subject: "Math",
+              location: "London",
+              price: 100,
+              spaces: 10,
+            },
+             music: {
+              imgALT: "Math img",
+              imgSRC: "math.png",
+              subject: "Music",
+              location: "London",
+              price: 150,
+              spaces: 8,
+            },
+             english:{
+              imgALT: "Math img",
+              imgSRC: "math.png",
+              subject: "English",
+              location: "London",
+              price: 150,
+              spaces: 8,
+            },
           },
         }, // this is the 'data' option, its value is a JSON object
         methods: {
-          toBasket: function () {
+          onload: function () {
+           
+          },
+          toBasket: function (subjec) {
             //check if there are free spaces left
-            if (this.math.spaces > 0) {
-              this.math.spaces -= 1;
+            if (subjec.spaces > 0) {
+              subjec.spaces -= 1;
             } else {
-              this.math.spaces = "No spaces";
+              subjec.spaces = "No spaces";
             }
           },
+        },
+        created: function () {
+          this.onload();
         },
       });
     </script>
