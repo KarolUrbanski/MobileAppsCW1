@@ -1,5 +1,5 @@
-let allSubjects = {
-    math: {
+let allSubjects = [
+    {
       id: 1001,
       imgALT: "Math img",
       imgSRC: "math.png",
@@ -9,7 +9,7 @@ let allSubjects = {
       spaces: 10,
       maxspaces: 10,
     },
-    music: {
+    {
       id: 1002,
       imgALT: "Math img",
       imgSRC: "math.png",
@@ -19,14 +19,14 @@ let allSubjects = {
       spaces: 8,
       maxspaces: 8,
     },
-    english: {
+    {
       id: 1003,
       imgALT: "Math img",
       imgSRC: "math.png",
       name: "English",
       location: "London",
-      price: 150,
+      price: 120,
       spaces: 8,
       maxspaces: 8,
     },
-  };
+];
