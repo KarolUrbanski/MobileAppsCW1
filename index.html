@@ -17,17 +17,17 @@
 
       <h4>Sort by:</h4>
 
-      <select v-model="sortBy.attribute">
-        <option selected value="SUB">Subject</option>
-        <option value="LOC">location</option>
-        <option value="PRC">price</option>
-        <option value="ABL">availability</option>
+      <select v-model="attribute">
+        <option value="name">Name</option>
+        <option value="location">location</option>
+        <option value="price">price</option>
+        <option value="seats">availability</option>
       </select>
 
-      <input type="radio" id="asc" value="1" v-model="sortBy.order" />
+      <input type="radio" id="asc" value="1" v-model="sortingOrder" />
       <label for="asc">Ascending</label>
 
-      <input type="radio" id="dsc" value="-1" v-model="sortBy.order" />
+      <input type="radio" id="dsc" value="-1" v-model="sortingOrder" />
       <label for="dsc">Descending</label>
 
     </div>
@@ -39,7 +39,8 @@
         <p>Price: {{item.price}}</p>
         <p v-if="item.spaces <= 5">Only {{item.spaces}} spaces!</p>
         <p v-else=>Spaces: {{item.spaces}}</p>
-        <input class="basketbt" type="button" id="addToBasket" value="Add to Basket" v-on:click="toBasket(item)" />
+        <input class="basketbt" type="button" value="Add to Basket" v-on:click="toBasket(item)" v-if="canAddToCart(item)" />
+        <input class="basketbt" type="button" value="Add to Basket" disabled="disabled" v-else />
       </div>
     </div>
 
@@ -52,27 +53,28 @@
       // the root Vue instance
       el: "#app", // this links to the <div> with the ID #app
       data: {
+        //read all the subjets from subjets file
         subjects: allSubjects,
 
+        //counting cart and collecting subjets id's
         order: {
           count: 0,
           subjecs: [],
         },
-        sortBy: {
-          //default select is by Subject
-          attribute: 'SUB',
-          order: 1,
-        },
+
+        //sorting atributes/default values
+        attribute: 'name',
+        sortingOrder: 1,
       }, // this is the 'data' option, its value is a JSON object
       methods: {
         toBasket: function (subjec) {
           //check if there are free spaces left
-          if (subjec.spaces > 0) {
+          if (this.canAddToCart(subjec)) {
             subjec.spaces -= 1;
             this.order.subjecs.push(subjec.id);
             this.order.count += 1;
           } else {
-            subjec.spaces = "No spaces";
+            subjec.spaces = 0;
           }
         },
         subjecsCount(id) {
@@ -83,49 +85,31 @@
             }
           }
           return count;
-        }
+        },
+        canAddToCart(subjec){
+        if(subjec.spaces<1)
+        return false
+        else
+        return true
+       },
       },
       computed: {
         sortedArray: function () {
-          // the comparison function
-          function compSubject(a, b) {
-            if (a.name > b.name) return 1;
-            if (a.name < b.name) return -1;
+          // the comparison function with selected attribute
+          let sortArray = this.subjects.sort((a, b) => {
+            if (a[this.attribute] > b[this.attribute]) return 1;
+            if (a[this.attribute] < b[this.attribute]) return -1;
             return 0;
-          }
+          });
 
-          function compPrice(a, b) {
-            if (a.price > b.price) return 1;
-            if (a.price < b.price) return -1;
-            return 0;
-          }
+          //check if sort order is descending if so reverse array
+          if(this.sortingOrder==-1)
+          sortArray.reverse()
 
-          function compLocation(a, b) {
-            if (a.location > b.location) return 1;
-            if (a.location < b.location) return -1;
-            return 0;
-          }
+          //return sorted array
+          return sortArray;
+        },
 
-          function compAvailability(a, b) {
-            if (a.spaces > b.spaces) return 1;
-            if (a.spaces < b.spaces) return -1;
-            return 0;
-          }
-
-          if (this.sortBy.attribute == "LOC")
-            return this.subjects.sort(compLocation);
-
-          else if (this.sortBy.attribute == "PRC")
-            return this.subjects.sort(compPrice);
-
-          else if (this.sortBy.attribute == "ABL")
-            return this.subjects.sort(compAvailability);
-
-          else
-            return this.subjects.sort(compSubject);
-
-
-        }
       }
     });
   </script>
