@@ -13,7 +13,25 @@
 <body>
   <div id="app">
     <h1>After School Club</h1>
-    <div v-for="item in sortedSubjects" class="cont">
+    <div class="left">
+
+      <h4>Sort by:</h4>
+
+      <select v-model="sortBy.attribute">
+        <option selected value="SUB">Subject</option>
+        <option value="LOC">location</option>
+        <option value="PRC">price</option>
+        <option value="ABL">availability</option>
+      </select>
+
+      <input type="radio" id="asc" value="1" v-model="sortBy.order" />
+      <label for="asc">Ascending</label>
+
+      <input type="radio" id="dsc" value="-1" v-model="sortBy.order" />
+      <label for="dsc">Descending</label>
+
+    </div>
+    <div v-for="item in sortedArray" class="cont">
       <img id="img" v-bind:src="item.imgSRC" v-bind:alt="item.imgALT" />
       <div class="right">
         <h3>{{item.name}}</h3>
@@ -40,6 +58,11 @@
           count: 0,
           subjecs: [],
         },
+        sortBy: {
+          //default select is by Subject
+          attribute: 'SUB',
+          order: 1,
+        },
       }, // this is the 'data' option, its value is a JSON object
       methods: {
         toBasket: function (subjec) {
@@ -63,14 +86,45 @@
         }
       },
       computed: {
-        sortedSubjects: function() {
-          // the comparison function that defines the order
-          function compare(a, b) {
+        sortedArray: function () {
+          // the comparison function
+          function compSubject(a, b) {
+            if (a.name > b.name) return 1;
+            if (a.name < b.name) return -1;
+            return 0;
+          }
+
+          function compPrice(a, b) {
             if (a.price > b.price) return 1;
             if (a.price < b.price) return -1;
             return 0;
-          } // sort the 'products' array and return it return
-          return this.subjects.sort(compare);
+          }
+
+          function compLocation(a, b) {
+            if (a.location > b.location) return 1;
+            if (a.location < b.location) return -1;
+            return 0;
+          }
+
+          function compAvailability(a, b) {
+            if (a.spaces > b.spaces) return 1;
+            if (a.spaces < b.spaces) return -1;
+            return 0;
+          }
+
+          if (this.sortBy.attribute == "LOC")
+            return this.subjects.sort(compLocation);
+
+          else if (this.sortBy.attribute == "PRC")
+            return this.subjects.sort(compPrice);
+
+          else if (this.sortBy.attribute == "ABL")
+            return this.subjects.sort(compAvailability);
+
+          else
+            return this.subjects.sort(compSubject);
+
+
         }
       }
     });

@@ -29,4 +29,14 @@ let allSubjects = [
       spaces: 8,
       maxspaces: 8,
     },
+    {
+      id: 1003,
+      imgALT: "Math img",
+      imgSRC: "math.png",
+      name: "Math",
+      location: "Brighton",
+      price: 120,
+      spaces: 8,
+      maxspaces: 8,
+    },
 ];
