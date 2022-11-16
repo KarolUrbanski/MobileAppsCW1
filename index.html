@@ -7,16 +7,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CW1 - group work</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="https://kit.fontawesome.com/72d85604c0.js" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/vue@2.7.8/dist/vue.js"></script>
 </head>
 
 <body>
   <div id="app">
     <h1>After School Club</h1>
-    <div class="left">
-
-      <h4>Sort by:</h4>
-
+    <main>       <!-- sorting section-->
+    <div id="sorting">
+      <h3>Sort by:</h3>
       <select v-model="attribute">
         <option value="name">Name</option>
         <option value="location">location</option>
@@ -24,13 +24,18 @@
         <option value="seats">availability</option>
       </select>
 
-      <input type="radio" id="asc" value="1" v-model="sortingOrder" />
+      <div class="mini-cont">
       <label for="asc">Ascending</label>
-
-      <input type="radio" id="dsc" value="-1" v-model="sortingOrder" />
+      <input type="radio" id="asc" value="1" v-model="sortingOrder" />
+     </div>
+     <div class="mini-cont">
       <label for="dsc">Descending</label>
-
+      <input type="radio" id="dsc" value="-1" v-model="sortingOrder" />
     </div>
+    </div>
+
+    <!-- subjects/products section-->
+    <div id="itemsCont">
     <div v-for="item in sortedArray" class="cont">
       <img id="img" v-bind:src="item.imgSRC" v-bind:alt="item.imgALT" />
       <div class="right">
@@ -43,9 +48,22 @@
         <input class="basketbt" type="button" value="Add to Basket" disabled="disabled" v-else />
       </div>
     </div>
+  </div>
+  </main> 
 
-    <p>{{order.count}}</p>
-    <p>{{order.subjecs}}</p>
+          <!-- cart section-->
+    <div id="cart" v-show="order.count>0" >
+      <div id="itemsCont">
+      <h2> Shopping Cart <i class="fa-solid fa-cart-shopping" ></i></h2>
+          <div v-for="item in subjects" v-if="order.subjecs.includes(item.id)" class="cont-mini">
+            <h3>{{item.name}}  <i v-bind:class="item.iconSRC"></i></h3>
+            <p>{{item.location}}</p>
+            <p>Price: {{item.price}}</p>
+            <p>Quantity: {{subjecsCount(item.id)}}</p>
+            <input class="basketbt" type="button" value="Remove" v-on:click="remove(item)" />
+          </div>
+  </div>
+</div>
   </div>
   <script src="subjects.js"></script>
   <script>
@@ -61,11 +79,10 @@
           count: 0,
           subjecs: [],
         },
-
         //sorting atributes/default values
         attribute: 'name',
         sortingOrder: 1,
-      }, // this is the 'data' option, its value is a JSON object
+      }, 
       methods: {
         toBasket: function (subjec) {
           //check if there are free spaces left
@@ -77,6 +94,20 @@
             subjec.spaces = 0;
           }
         },
+        remove: function (subjec) {
+          //for every element in order
+            for( var i = 0; i < this.order.subjecs.length; i++){
+              //check for first id to remove
+              if(this.order.subjecs[i]==subjec.id){
+                //remove subject/count add spaces and return to not remove all the same objects
+                this.order.subjecs.splice(i, 1);
+                this.order.count -= 1;
+                subjec.spaces += 1;
+                return
+              }
+            }
+        },
+
         subjecsCount(id) {
           let count = 0;
           for (let i = 0; i < this.order.subjecs.length; i++) {
