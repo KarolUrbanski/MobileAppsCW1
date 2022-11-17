@@ -162,12 +162,13 @@
             feedback.innerHTML +=
               "<b>Wrong phone number or Wrong name</b><br> (Phone minimum length is 8, and its only numbers. Name should be only letters)";
           } else
-          swal({
-            title: "Order placed!",
-            text: "Name: " + this.checkout.name +" Phone: "+this.checkout.phone+ " Total Price:" + this.totalPrice,
-            icon: "success",
-            button: "Done",
-          });
+            swal({
+              title: "Order placed!",
+              text: "Name: " + this.checkout.name + " Phone: " + this.checkout.phone + " Total Price:" + this
+                .totalPrice,
+              icon: "success",
+              button: "Done",
+            });
         },
 
         subjecsCount(id) {
@@ -186,7 +187,16 @@
             return true
         },
         showCheckout: function () {
+          //shgow checkout section and scroll to it
           this.checkout.show = true;
+        
+          setTimeout(() => {  
+            window.scrollBy({
+            top: 300, 
+            left: 0,
+            behavior: 'smooth'
+          });
+           }, 50);
         }
       },
       computed: {
