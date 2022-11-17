@@ -13,57 +13,75 @@
 
 <body>
   <div id="app">
-    <h1>After School Club</h1>
-    <main>       <!-- sorting section-->
-    <div id="sorting">
-      <h3>Sort by:</h3>
-      <select v-model="attribute">
-        <option value="name">Name</option>
-        <option value="location">location</option>
-        <option value="price">price</option>
-        <option value="seats">availability</option>
-      </select>
-
-      <div class="mini-cont">
-      <label for="asc">Ascending</label>
-      <input type="radio" id="asc" value="1" v-model="sortingOrder" />
-     </div>
-     <div class="mini-cont">
-      <label for="dsc">Descending</label>
-      <input type="radio" id="dsc" value="-1" v-model="sortingOrder" />
-    </div>
-    </div>
-
-    <!-- subjects/products section-->
-    <div id="itemsCont">
-    <div v-for="item in sortedArray" class="cont">
-      <img id="img" v-bind:src="item.imgSRC" v-bind:alt="item.imgALT" />
-      <div class="right">
-        <h3>{{item.name}}</h3>
-        <p>{{item.location}}</p>
-        <p>Price: {{item.price}}</p>
-        <p v-if="item.spaces <= 5">Only {{item.spaces}} spaces!</p>
-        <p v-else=>Spaces: {{item.spaces}}</p>
-        <input class="basketbt" type="button" value="Add to Basket" v-on:click="toBasket(item)" v-if="canAddToCart(item)" />
-        <input class="basketbt" type="button" value="Add to Basket" disabled="disabled" v-else />
+    <h1>
+      After School Club
+      <!-- search section -->
+      <div class="searchBox">
+        <input class="searchInput" type="text" placeholder="Search" v-model.trim="searchString">
+        <button class="searchButton" href="#">
+          <i class="fa-solid fa-magnifying-glass fa-xl"></i>
+        </button>
       </div>
-    </div>
-  </div>
-  </main> 
+    </h1>
+    <main>
+      <!-- sorting section-->
+      <div id="sorting">
+        <h3>Sort by:</h3>
+        <select v-model="attribute">
+          <option value="name">Name</option>
+          <option value="location">location</option>
+          <option value="price">price</option>
+          <option value="seats">availability</option>
+        </select>
 
-          <!-- cart section-->
-    <div id="cart" v-show="order.count>0" >
-      <div id="itemsCont">
-      <h2> Shopping Cart <i class="fa-solid fa-cart-shopping" ></i></h2>
-          <div v-for="item in subjects" v-if="order.subjecs.includes(item.id)" class="cont-mini">
-            <h3>{{item.name}}  <i v-bind:class="item.iconSRC"></i></h3>
+        <div class="mini-cont">
+          <label for="asc">Ascending</label>
+          <input type="radio" id="asc" value="1" v-model="sortingOrder" />
+        </div>
+        <div class="mini-cont">
+          <label for="dsc">Descending</label>
+          <input type="radio" id="dsc" value="-1" v-model="sortingOrder" />
+        </div>
+      </div>
+
+      <!-- subjects/products section-->
+      <div class="itemsCont" id="itemCont">
+        <h1 id="search-out" style="display:none">No subjects found :( </h1>
+        <div v-for="item in sortedArray" class="cont">
+          <img id="img" v-bind:src="item.imgSRC" v-bind:alt="item.imgALT" />
+          <div class="right">
+            <h3>{{item.name}}</h3>
             <p>{{item.location}}</p>
             <p>Price: {{item.price}}</p>
-            <p>Quantity: {{subjecsCount(item.id)}}</p>
-            <input class="basketbt" type="button" value="Remove" v-on:click="remove(item)" />
+            <!-- Check for spaces in subjec=t -->
+            <p v-if="item.spaces <= 0">No more spaces!</p>
+            <p v-else-if="item.spaces <= 5">Only {{item.spaces}} spaces!</p>
+            <p v-else=>Spaces: {{item.spaces}}</p>
+
+            <input class="basketbt" type="button" value="Add to Basket" v-on:click="toBasket(item)"
+              v-if="canAddToCart(item)" />
+            <input class="basketbt" type="button" value="Add to Basket" disabled="disabled" v-else />
           </div>
-  </div>
-</div>
+        </div>
+      </div>
+    </main>
+
+    <!-- cart section-->
+    <div id="cart" v-show="order.count>0">
+      <div class="itemsCont">
+        <h2> Shopping Cart <i class="fa-solid fa-cart-shopping"></i></h2>
+        <div v-for="item in subjects" v-if="order.subjecs.includes(item.id)" class="cont-mini">
+          <h3>{{item.name}} <i v-bind:class="item.iconSRC"></i></h3>
+          <p>{{item.location}}</p>
+          <p>Price: {{item.price}}</p>
+          <p>Quantity: {{subjecsCount(item.id)}}</p>
+          <input class="basketbt" type="button" value="Remove" v-on:click="remove(item)" />
+        </div>
+      </div>
+    </div>
+    <!-- Checkout -->
+
+
   </div>
   <script src="subjects.js"></script>
   <script>
@@ -82,30 +100,29 @@
         //sorting atributes/default values
         attribute: 'name',
         sortingOrder: 1,
-      }, 
+
+        //search
+        searchString: '',
+      },
       methods: {
         toBasket: function (subjec) {
-          //check if there are free spaces left
-          if (this.canAddToCart(subjec)) {
-            subjec.spaces -= 1;
-            this.order.subjecs.push(subjec.id);
-            this.order.count += 1;
-          } else {
-            subjec.spaces = 0;
-          }
+          subjec.spaces -= 1;
+          this.order.subjecs.push(subjec.id);
+          this.order.count += 1;
+
         },
         remove: function (subjec) {
           //for every element in order
-            for( var i = 0; i < this.order.subjecs.length; i++){
-              //check for first id to remove
-              if(this.order.subjecs[i]==subjec.id){
-                //remove subject/count add spaces and return to not remove all the same objects
-                this.order.subjecs.splice(i, 1);
-                this.order.count -= 1;
-                subjec.spaces += 1;
-                return
-              }
+          for (var i = 0; i < this.order.subjecs.length; i++) {
+            //check for first id to remove
+            if (this.order.subjecs[i] == subjec.id) {
+              //remove subject/count add spaces and return to not remove all the same objects
+              this.order.subjecs.splice(i, 1);
+              this.order.count -= 1;
+              subjec.spaces += 1;
+              return
             }
+          }
         },
 
         subjecsCount(id) {
@@ -117,15 +134,17 @@
           }
           return count;
         },
-        canAddToCart(subjec){
-        if(subjec.spaces<1)
-        return false
-        else
-        return true
-       },
+        canAddToCart(subjec) {
+          if (subjec.spaces < 1)
+            return false
+          else
+            return true
+        },
       },
       computed: {
         sortedArray: function () {
+          //reset style of search output
+          document.getElementById('search-out').style.display='none';
           // the comparison function with selected attribute
           let sortArray = this.subjects.sort((a, b) => {
             if (a[this.attribute] > b[this.attribute]) return 1;
@@ -134,13 +153,32 @@
           });
 
           //check if sort order is descending if so reverse array
-          if(this.sortingOrder==-1)
-          sortArray.reverse()
+          if (this.sortingOrder == -1)
+            sortArray.reverse()
 
-          //return sorted array
-          return sortArray;
+          //return sorted array if no changes to search
+          if (!this.searchString) {
+            return sortArray;
+          } else {
+            //search string to lower case
+            searchString = this.searchString.toLowerCase();
+
+            let searchArray = sortArray.filter((element) => {
+              //check if search sting is a part of string in subject name/location
+              if (element.name.toLowerCase().indexOf(searchString) != -1 ||
+                element.location.toLowerCase().indexOf(searchString) != -1) {
+                return element
+              }
+            });
+            
+            if (Object.keys(searchArray).length==0) //check if object if empty 
+                document.getElementById('search-out').style.display='block';
+              
+            else //output array of searched subjects
+              return searchArray;
+          
+          }
         },
-
       }
     });
   </script>
