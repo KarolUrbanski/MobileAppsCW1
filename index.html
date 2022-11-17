@@ -25,7 +25,7 @@
     </h1>
     <main>
       <!-- sorting section-->
-      <div id="sorting">
+      <div class="left">
         <h3>Sort by:</h3>
         <select v-model="attribute">
           <option value="name">Name</option>
@@ -68,8 +68,13 @@
 
     <!-- cart section-->
     <div id="cart" v-show="order.count>0">
+      <h2> Shopping Cart <i class="fa-solid fa-cart-shopping"></i></h2>
+      <div class="left mini-cont">
+        <p>Items in cart: <b>{{order.count}}</b></p>
+        <p>Total Price: <b>{{totalPrice}}</b></p>
+        <input class="checkoutBTN" type="button" value="Checkout" v-on:click="showCheckout()" />
+      </div>
       <div class="itemsCont">
-        <h2> Shopping Cart <i class="fa-solid fa-cart-shopping"></i></h2>
         <div v-for="item in subjects" v-if="order.subjecs.includes(item.id)" class="cont-mini">
           <h3>{{item.name}} <i v-bind:class="item.iconSRC"></i></h3>
           <p>{{item.location}}</p>
@@ -80,14 +85,30 @@
       </div>
     </div>
     <!-- Checkout -->
+    <div v-if="checkout.show==true">
+      <div class="input-container">
+        <input type="text" id="name" placeholder=" " v-model="checkout.name">
+        <label for="password">Name:</label>
+      </div>
 
+      <div class="input-container">
+        <input type="text" id="phone" placeholder=" " v-model="checkout.phone">
+        <label for="phone">Phone:</label>
+      </div>
+      <div id="feedback">
+        <p></p>
+      </div>
+      <button v-on:click="placeOrder()" type="button" class="checkoutBTN">Place a order</button>
+    </div>
 
   </div>
   <script src="subjects.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   <script>
     let app = new Vue({
       // the root Vue instance
       el: "#app", // this links to the <div> with the ID #app
+
       data: {
         //read all the subjets from subjets file
         subjects: allSubjects,
@@ -103,7 +124,15 @@
 
         //search
         searchString: '',
+
+        //checkout
+        checkout: {
+          show: false,
+          name: '',
+          phone: '',
+        }
       },
+
       methods: {
         toBasket: function (subjec) {
           subjec.spaces -= 1;
@@ -124,6 +153,22 @@
             }
           }
         },
+        placeOrder: function () {
+          const regexName = new RegExp("(?=.*[a-zA-z])");
+          const regexPhone = new RegExp("(?=.*[0-9])(?=.{8,})");
+          let feedback = document.getElementById('feedback');
+          feedback.innerHTML = "";
+          if (!regexPhone.test(this.checkout.phone) || !regexName.test(this.checkout.name)) {
+            feedback.innerHTML +=
+              "<b>Wrong phone number or Wrong name</b><br> (Phone minimum length is 8, and its only numbers. Name should be only letters)";
+          } else
+          swal({
+            title: "Order placed!",
+            text: "Name: " + this.checkout.name +" Phone: "+this.checkout.phone+ " Total Price:" + this.totalPrice,
+            icon: "success",
+            button: "Done",
+          });
+        },
 
         subjecsCount(id) {
           let count = 0;
@@ -140,11 +185,14 @@
           else
             return true
         },
+        showCheckout: function () {
+          this.checkout.show = true;
+        }
       },
       computed: {
         sortedArray: function () {
           //reset style of search output
-          document.getElementById('search-out').style.display='none';
+          document.getElementById('search-out').style.display = 'none';
           // the comparison function with selected attribute
           let sortArray = this.subjects.sort((a, b) => {
             if (a[this.attribute] > b[this.attribute]) return 1;
@@ -170,14 +218,26 @@
                 return element
               }
             });
-            
-            if (Object.keys(searchArray).length==0) //check if object if empty 
-                document.getElementById('search-out').style.display='block';
-              
+
+            if (Object.keys(searchArray).length == 0) //check if object if empty 
+              document.getElementById('search-out').style.display = 'block';
+
             else //output array of searched subjects
               return searchArray;
-          
+
           }
+        },
+        totalPrice: function () {
+          //calculate total price
+          let total = 0;
+          this.order.subjecs.forEach(id => {
+            this.subjects.forEach(subj => {
+              if (id == subj.id) {
+                total = total + subj.price;
+              }
+            });
+          });
+          return total;
         },
       }
     });
