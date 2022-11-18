@@ -92,13 +92,13 @@
       </div>
 
       <div class="input-container">
-        <input type="text" id="phone" placeholder=" " v-model="checkout.phone">
+        <input type="number" id="phone" placeholder=" " v-model="checkout.phone">
         <label for="phone">Phone:</label>
       </div>
       <div id="feedback">
         <p></p>
       </div>
-      <button v-on:click="placeOrder()" type="button" class="checkoutBTN">Place a order</button>
+      <button v-on:click="placeOrder()" type="button" class="checkoutBTN">Place order</button>
     </div>
 
   </div>
@@ -135,9 +135,18 @@
 
       methods: {
         toBasket: function (subjec) {
+          //add subject to order array and scroll 
           subjec.spaces -= 1;
           this.order.subjecs.push(subjec.id);
           this.order.count += 1;
+
+          setTimeout(() => {
+            window.scrollBy({
+              top: 300,
+              left: 0,
+              behavior: 'smooth'
+            });
+          }, 50);
 
         },
         remove: function (subjec) {
@@ -154,6 +163,7 @@
           }
         },
         placeOrder: function () {
+          //check phone and name regex
           const regexName = new RegExp("(?=.*[a-zA-z])");
           const regexPhone = new RegExp("(?=.*[0-9])(?=.{8,})");
           let feedback = document.getElementById('feedback');
@@ -161,7 +171,8 @@
           if (!regexPhone.test(this.checkout.phone) || !regexName.test(this.checkout.name)) {
             feedback.innerHTML +=
               "<b>Wrong phone number or Wrong name</b><br> (Phone minimum length is 8, and its only numbers. Name should be only letters)";
-          } else
+          } else {
+            //show alert of order + restart values of checkout and order to 
             swal({
               title: "Order placed!",
               text: "Name: " + this.checkout.name + " Phone: " + this.checkout.phone + " Total Price:" + this
@@ -169,8 +180,14 @@
               icon: "success",
               button: "Done",
             });
+            this.checkout.show = false;
+            this.checkout.name = '';
+            this.checkout.phone = '';
+            this.order.count = 0;
+            this.order.subjecs = [];
+          }
         },
-
+        //counting how many specific orders are in array
         subjecsCount(id) {
           let count = 0;
           for (let i = 0; i < this.order.subjecs.length; i++) {
@@ -189,14 +206,14 @@
         showCheckout: function () {
           //shgow checkout section and scroll to it
           this.checkout.show = true;
-        
-          setTimeout(() => {  
+
+          setTimeout(() => {
             window.scrollBy({
-            top: 300, 
-            left: 0,
-            behavior: 'smooth'
-          });
-           }, 50);
+              top: 300,
+              left: 0,
+              behavior: 'smooth'
+            });
+          }, 50);
         }
       },
       computed: {
